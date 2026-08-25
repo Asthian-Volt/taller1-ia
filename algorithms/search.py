@@ -75,30 +75,30 @@ def breadthFirstSearch(problem: SearchProblem):
 
 
 def uniformCostSearch(problem: SearchProblem):
-    """
-    Search the node of least total cost first.
-    """
     inicio = problem.getStartState()
     frontera = utils.PriorityQueue()
     frontera.push((inicio, [], 0), 0)
     mejor_g = {inicio: 0}
+    expandidos = set()
 
     while not frontera.isEmpty():
         estado, camino, g = frontera.pop()
 
-        if g > mejor_g.get(estado, float("inf")):
+        if estado in expandidos:
             continue
+        expandidos.add(estado)
 
         if problem.isGoalState(estado):
             return camino
 
         for sucesor, accion, costo in problem.getSuccessors(estado):
             nuevo_g = g + costo
-            if nuevo_g < mejor_g.get(sucesor, float("inf")):
+            if sucesor not in expandidos and nuevo_g < mejor_g.get(sucesor, float("inf")):
                 mejor_g[sucesor] = nuevo_g
                 frontera.push((sucesor, camino + [accion], nuevo_g), nuevo_g)
 
     return []
+
 
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
@@ -109,19 +109,22 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     frontera = utils.PriorityQueue()
     frontera.push((inicio, [], 0), heuristic(inicio, problem))
     mejor_g = {inicio: 0}
+    expandidos = set()
 
     while not frontera.isEmpty():
         estado, camino, g = frontera.pop()
 
-        if g > mejor_g.get(estado, float("inf")):
+     
+        if estado in expandidos:
             continue
+        expandidos.add(estado)
 
         if problem.isGoalState(estado):
             return camino
 
         for sucesor, accion, costo in problem.getSuccessors(estado):
             nuevo_g = g + costo
-            if nuevo_g < mejor_g.get(sucesor, float("inf")):
+            if sucesor not in expandidos and nuevo_g < mejor_g.get(sucesor, float("inf")):
                 mejor_g[sucesor] = nuevo_g
                 frontera.push(
                     (sucesor, camino + [accion], nuevo_g),
